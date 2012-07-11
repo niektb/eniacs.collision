@@ -60,10 +60,9 @@ Copyright (c) 2011 appMobi
 				this.TimeOffset = (new Date()).getTime();
 				this.PreviousFrameTime = 0;
 				this.CurrentFrameTime = 0;
-				this.TimeEventId = setInterval("this.Update()",this.Interval);
-				//testestes
-				x$("#txtInfo").html("Hello NIek!");
-				this.Update();
+				var self = this;
+				var func = function(){ self.Update.apply(self); };
+				this.TimeEventId = setInterval(func ,this.Interval);
 			}
 
 			Timer.prototype.Stop = function() {
@@ -77,10 +76,9 @@ Copyright (c) 2011 appMobi
 			Timer.prototype.Update = function() {
 				this.PreviousFrameTime = this.CurrentFrameTime;
 				this.CurrentFrameTime = (new Date()).getTime() - this.TimeOffset;
+				//x$("#txtInfo").html(String(this.ToString()));
 				for(EventHandlerName in this.EventHandlerList) {
-					x$("#txtInfo").html("Hello");
-					//x$("#txtInfo").html(String(this.CurrentFrameTime));
-					//this.EventHandlerList[EventHandlerName](this);
+					this.EventHandlerList[EventHandlerName](this);
 				}
 			}
 
@@ -133,11 +131,8 @@ Copyright (c) 2011 appMobi
 			AppMobi.device.hideSplashScreen();
 
 			//start game time
-			//StartingTime = (new Date()).getTime();
-			//setInterval(function(){ Update((new Date()).getTime() - StartingTime) },100);
 			timer = new Timer();
-			//x$("#txtInfo").html(String(timer.Start));
-			//timer.AddEventHandler(Update);
+			timer.AddEventHandler(Update);
 			timer.Start(100);
         }
         //initial event handler to detect when appMobi is ready to roll
@@ -145,7 +140,7 @@ Copyright (c) 2011 appMobi
 
 		function Update(timer)
 		{
-			//x$("#txtInfo").html(timer.ToString());
+			x$("#txtInfo").html(timer.ToString());
 			//x$("#txtInfo").html(String(timer));
 		}
         
