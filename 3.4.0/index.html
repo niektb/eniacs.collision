@@ -88,9 +88,10 @@ Copyright (c) 2011 appMobi
 			//start game time
 			timer = new Timer();
 			timer.AddEventHandler(Update);
-			timer.Start(100);
+			timer.Start(50);
 
 			var ball1 = new Ball(100,100);
+			ball1.setSpeed(1,2);
 			ball1.Show();
 			timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
 		//	ball1.Hide();
@@ -100,10 +101,7 @@ Copyright (c) 2011 appMobi
 
 		function Update(timer)
 		{
-			//x$("#txtInfo").html(timer.ToString());
-			//var wrapper = document.getElementById("balls");
-			//var balls = wrapper.getElementsByTagName("img");
-			//x$("#txtInfo").html(String(balls.length));
+			x$("#txtInfo").html(timer.ToString());
 		}
         
         //animate an element with a specified id attribute [Green]

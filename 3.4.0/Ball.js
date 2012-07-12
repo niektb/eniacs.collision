@@ -5,20 +5,23 @@
 function Ball(x,y) {
 	this.X=x;
 	this.Y=y;
-	this.dX=1;
+	this.dX=0;
 	this.dY=0;
 	this.ballId= "undefined";
 	this.tag;
 
+	Ball.prototype.setSpeed = function(dx,dy) {
+		this.dX = dx;
+		this.dY = dy;
+	}
+
 	Ball.prototype.Update = function() {
-		this.X = this.X + this.dX;
-		this.Y = this.Y + this.dY;
+		this.X += this.dX;
+		this.Y += this.dY;
 
 		// Update the html attributes
-		//this.tag.setAttribute("top", this.Y);
-		//this.tag.setAttribute("left", this.X);
-		//this.tag.top = this.Y;
-		//this.tag.left = this.X;
+		this.tag.style.top = this.Y + 'px';
+		this.tag.style.left = this.X + 'px';
 	}
 
 	Ball.prototype.Show = function() {
@@ -32,8 +35,9 @@ function Ball(x,y) {
 			var ballNr = parseInt(balls[balls.length-1].id.substr(4)) + 1;
 		this.ballId = "ball" + ballNr;
 
-		this.tag = '<img id="' + this.ballId + '" src="images/green.png" style="position:absolute; top:' + this.Y + 'px; left:' + this.X + 'px;"/>';
-		wrapper.innerHTML += this.tag;
+		var html = '<img id="' + this.ballId + '" src="images/green.png" style="position:absolute; top:' + this.Y + 'px; left:' + this.X + 'px;"/>';
+		wrapper.innerHTML += html;
+		this.tag = wrapper.childNodes[this.ballId];
 	}
 	
 	Ball.prototype.Hide = function() {
