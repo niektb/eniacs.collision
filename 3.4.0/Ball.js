@@ -13,12 +13,6 @@ function Ball() {
 		X = X + dX;
 		Y = Y + dY;
 	}
-
-	Ball.prototype.AddToHTML = function() {
-		var wrapper = x$("#balls");
-    	wrapper.html('<img id="ball1" src="images/green.png" style="position:absolute; top:330px; left:10px;" />');
-			
-	}
 }
 
 function AddHTML() {
