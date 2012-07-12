@@ -20,3 +20,17 @@ function Ball() {
 			
 	}
 }
+
+function AddHTML() {
+this.addtag = '<img id="animateItem1" src="images/green.png" style="position:absolute; />';
+
+document.getElementById('balls').innerHTML += tag;
+}
+
+function RemoveHTML() {
+this.ballid = "animateItem1";
+this.removetag = document.getElementById(ballid);
+
+ballid.parentNode.removeChild(ballid);
+}
+
