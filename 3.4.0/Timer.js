@@ -1,9 +1,13 @@
+/* This class takes care of the game loop.
+ * It fires an event each specified time interval, 
+ * and calls all event handlers.
+ * */
 function Timer() {
-	this.TimeOffset = 0;
-	this.PreviousFrameTime = 0;
-	this.CurrentFrameTime = 0;
-	this.Interval = 0;
-	this.TimeEventId;
+	this.TimeOffset = 0; // ms since 1970
+	this.PreviousFrameTime = 0; // ms from start till previous frame
+	this.CurrentFrameTime = 0; // ms from start till current frame
+	this.Interval = 0; // Time between two frames
+	this.TimeEventId; 
 	this.EventHandlerList = new Array();
 
 	Timer.prototype.AddEventHandler = function(EventHandler) {
@@ -24,14 +28,16 @@ function Timer() {
 		clearTimeout(this.TimeEventId);
 	}
 
+	// time between current frame and previous frame
 	Timer.prototype.getElapsedTime = function() {
 		return this.CurrentFrameTime - this.PreviousFrameTime;
 	}
 
+	// Called every event, calls all eventhandlers
 	Timer.prototype.Update = function() {
 		this.PreviousFrameTime = this.CurrentFrameTime;
 		this.CurrentFrameTime = (new Date()).getTime() - this.TimeOffset;
-		//x$("#txtInfo").html(String(this.ToString()));
+
 		for(EventHandlerName in this.EventHandlerList) {
 			this.EventHandlerList[EventHandlerName](this);
 		}

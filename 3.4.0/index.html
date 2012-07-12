@@ -27,7 +27,7 @@ Copyright (c) 2011 appMobi
     <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/> 
 
-    <title>Animation</title>
+    <title>Collision</title>
     
         <script type="text/javascript" charset="utf-8" src="http://localhost:58888/_appMobi/appmobi.js"></script>
         <script type="text/javascript" charset="utf-8" src="general.js"></script>
@@ -89,6 +89,9 @@ Copyright (c) 2011 appMobi
 			timer = new Timer();
 			timer.AddEventHandler(Update);
 			timer.Start(100);
+
+			var ball1 = new Ball();
+			ball1.AddToHTML();
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
@@ -96,7 +99,6 @@ Copyright (c) 2011 appMobi
 		function Update(timer)
 		{
 			x$("#txtInfo").html(timer.ToString());
-			//x$("#txtInfo").html(String(timer));
 		}
         
         //animate an element with a specified id attribute [Green]
@@ -172,203 +174,20 @@ Copyright (c) 2011 appMobi
 		
         </script>
 
-        <script type="text/javascript">
-        /* statMobi Analytics */
-
-        /* This sample function records an event ID, as well as an optional
-        set of name/value pairs as a query string to the statMobi Analytics
-        logs.*/
-        function addAnalyticsDataPoint(eventID,queryString)
-        {
-           try
-           {
-               if (queryString==null) { queryString = ""; }
-               AppMobi.analytics.logPageEvent("/application/" + eventID +
-        ".event", queryString, "", "", 0, "index.html");
-           }
-           catch(e) {}
-        }
-        /* Drop this javascript function into the <head> element of your
-        application's index.html page and call it everywhere you want to
-        record an analytics event. It takes two parameters. The first is an
-        event identifier string and the second is an optional key/value query
-        string parameter. */
-        </script>
-
-        <script type="text/javascript">
-        /* Live Updates */
-
-        /* If you decide to allow your application to handle Live Updates itself, 
-        this snippet will give you a starting point. Drop this javascript code 
-        into your application's <body> HTML tag to detect if an update has been 
-        successfully downloaded. */
-
-        /* This event handler captures the event thrown when an update becomes available while an application is running */
-        document.addEventListener("appMobi.device.update.available",onUpdateAvailable,false); 
-        function onUpdateAvailable(evt) {
-          /* test to see if the event is appMobi.device.update.available */
-          if (evt.type == "appMobi.device.update.available") {
-            /* there is an update available *while* the application is running - decide what to do */
-            if (confirm(evt.updateMessage)==true) {
-              updateApplication();
-            }
-            else {
-              updateApplicationLater();
-            }
-          }
-        }
-
-        document.addEventListener("appMobi.device.ready",onDeviceReadyTestForUpdate,false);
-        function onDeviceReadyTestForUpdate(evt)
-        {
-          /* appMobi.updateAvailable indicates whether or not an over the air update is available or not. */
-          if (AppMobi.updateAvailable==true)
-          {
-            //there is an application update available at startup
-            if (confirm(AppMobi.updateMessage)==true) {
-              updateApplication();
-            }
-            else {
-              updateApplicationLater();
-            }
-          }
-        }
-
-        function updateApplication() {
-            /* installs an update if one is available */
-            AppMobi.device.installUpdate();
-        }
-           
-        function updateApplicationLater() {
-            /* add any code to indicate that the update has been postponed */
-            alert("The update has been postponed");
-        }
-
-        </script>
-
-<script>
-/* This snippet of code is a starting point for handling pushMobi Push Messages in 
-an appMobi application. Drop this javascript code into your application's <head>
-HTML tag to allow a user to log in and test basic push text messaging. */
-
-/*
-
-// Register for messages as soon as appMobi is loaded 
-document.addEventListener("appMobi.device.ready",registerForMessages,false);
-
-// This function will add this device to the push messaging system the first time it runs on a device 
-function registerForMessages() {
-    //Get the unique identifier of this device
-    myUserID=AppMobi.device.uuid;
-    
-    //Register the appMobi.notification.push.enable event
-    document.addEventListener("appMobi.notification.push.enable",notificationsRegistered,false);
-    
-    //If this device is already registered, just check for new notifications
-    if(AppMobi.cache.getCookie("username")===undefined)
-    {
-        try {
-			//unremark this code to register this application for push messages
-            var chosenUsername = prompt("Choose a username for push messaging", AppMobi.device.uuid);
-            var chosenPassword = prompt("Choose a password for push messaging", "password");
-            var chosenEmail    = prompt("Enter an email address for account confirmation","");
-            
-            AppMobi.cache.setCookie("username",chosenUsername);
-            AppMobi.cache.setCookie("password",chosenPassword);
-            AppMobi.cache.setCookie("email",chosenEmail);
-            AppMobi.notification.addPushUser(chosenUsername,chosenPassword,chosenEmail); 
-	    } catch(e){ alert("error adding push user: " + e.message); }
-    }
-    else
-    {
-        AppMobi.notification.checkPushUser(AppMobi.cache.getCookie("username"),AppMobi.cache.getCookie("password"));
-    }
-}
-      
-
-var clearList=[];
-
-// Callback for handling notifications 
-function updateNotifications(event)
-{
-   try
-   {
-        var myNotifications=AppMobi.notification.getNotificationList();
-        var len=myNotifications.length;
-	    
-        for(i=0;i<len;i++)
-        {
-            //get the pushMobi message data
-            msgObj=AppMobi.notification.getNotificationData(myNotifications[i]);
-
-            //display the pushMobi message as a notification if there is no data
-            if (msgObj.richhtml === undefined && msgObj.richurl === undefined)
-            {
-                AppMobi.notification.alert(msgObj.msg,"pushMobi Message","OK");
-            	 //remove the message from the server
-            	AppMobi.notification.readPushNotifications(msgObj.id);  
-            }
-            else
-            {
-                AppMobi.notification.showRichPushViewer(msgObj.id, 10, 10, 10, 10, 80, 80);
-            }
-
-
-        }
-    }
-    catch(e) { alert("error in updateNotifications: " + e.message); }
-}
-
-  document.addEventListener("appMobi.notification.push.rich.close",richViewerClosed,false);
-
-
-function richViewerClosed(event)
-{
- 	//remove the message from the server
-    AppMobi.notification.readPushNotifications(event.id);  
-}
-
-var didcheckuser = false;
-function notificationsRegistered(event)
-{
-    if(event.success===false)
-    {
-    	if( didcheckuser == false )
-    	{
-            AppMobi.notification.checkPushUser(AppMobi.device.uuid,"password");
-            didcheckuser = true;
-        }
-        else
-        {
-        	alert("There was an error adding push notifications "+event.message);
-        }
-        return;
-    }
-
-    document.addEventListener('appMobi.notification.push.receive',updateNotifications,false);
-    document.addEventListener("appMobi.notification.push.refresh",updateNotifications,false);
-
-
-    updateNotifications();
-}
-
-*/
-
-</script>
-		
     </head>
     <body onload="init();" style="background-image:url('images/app_bg.jpg');background-repeat:no-repeat;">
     <center><img id="stage" src="images/0.gif" ontouchmove="preventDefaultScroll(event); return false;" style="width:95%;height:95%;"/></center>
     
     <span id="txtInfo" style="position:absolute; top:130px; left:10px; width:748px;  text-align:center;">
-    Tap the board where you want to move the green tiddlywink.  Tap the orange one to move it to a random location.  Tap the blue one to move it to the location of the last moved piece.   
+		This is a message box.
     </span> 
     
     <span id="txtProcessing" style="position:absolute; top:100px; left:10px; width:748px; text-align:center;"></span>
 
-    <img id="animateItem1" src="images/green.png" style="position:absolute; top:330px; left:10px;" />
-    <img id="animateItem2" src="images/orange.png" style="position:absolute; top:560px; left:250px;" />
-    <img id="animateItem3" src="images/blue.png" style="position:absolute; top:430px; left:450px;" />
-
+	<div id="balls">
+	    <img id="animateItem1" src="images/green.png" style="position:absolute; top:330px; left:10px;" />
+	    <img id="animateItem2" src="images/orange.png" style="position:absolute; top:560px; left:250px;" />
+	    <img id="animateItem3" src="images/blue.png" style="position:absolute; top:430px; left:450px;" />
+	</div>
     </body>
 </html>
