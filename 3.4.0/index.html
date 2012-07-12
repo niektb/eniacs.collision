@@ -90,9 +90,10 @@ Copyright (c) 2011 appMobi
 			timer.AddEventHandler(Update);
 			timer.Start(100);
 
-			var ball1 = new Ball();
-			ball1.AddToHTML();
-		//	ball1.RemoveFromHTML();
+			var ball1 = new Ball(100,100);
+			ball1.Show();
+			timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
+		//	ball1.Hide();
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
@@ -100,7 +101,9 @@ Copyright (c) 2011 appMobi
 		function Update(timer)
 		{
 			//x$("#txtInfo").html(timer.ToString());
-			//x$("#txtInfo").html(String(document.getElementById("balls").childNodes[2].value));
+			//var wrapper = document.getElementById("balls");
+			//var balls = wrapper.getElementsByTagName("img");
+			//x$("#txtInfo").html(String(balls.length));
 		}
         
         //animate an element with a specified id attribute [Green]
@@ -187,9 +190,6 @@ Copyright (c) 2011 appMobi
     <span id="txtProcessing" style="position:absolute; top:100px; left:10px; width:748px; text-align:center;"></span>
 
 	<div id="balls">
-	    <img id="ball0" src="images/green.png" style="position:absolute; top:330px; left:10px;" />
-	    <img id="ball1" src="images/orange.png" style="position:absolute; top:560px; left:250px;" />
-	    <img id="ball2" src="images/blue.png" style="position:absolute; top:430px; left:450px;" />
 	</div>
     </body>
 </html>
