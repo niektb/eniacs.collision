@@ -9,19 +9,30 @@ function Ball(x,y) {
 	this.dY=0;
 	this.ballId= "undefined";
 	this.tag;
-
+	
+	var imagewidth = 33;
+	
 	Ball.prototype.setSpeed = function(dx,dy) {
 		this.dX = dx;
 		this.dY = dy;
 	}
 
 	Ball.prototype.Update = function() {
+		if (((this.X + imagewidth) >= iPortraitWidth) || ((this.X - imagewidth) <=0)){
+			this.dX = -this.dX;
+		}
+		
+		if (((this.Y + imagewidth) >= iLandscapeWidth) || ((this.Y - imagewidth) <=0)){
+			this.dY = -this.dY;
+		}
+		
+		
 		this.X += this.dX;
 		this.Y += this.dY;
 
 		// Update the html attributes
-		this.tag.style.top = this.Y + 'px';
-		this.tag.style.left = this.X + 'px';
+		this.tag.style.top = (this.Y -  imagewidth) + 'px';
+		this.tag.style.left = (this.X - imagewidth) + 'px';
 	}
 
 	Ball.prototype.Show = function() {
