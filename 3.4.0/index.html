@@ -61,7 +61,6 @@ Copyright (c) 2011 appMobi
         {
         }
         
-        
         //*** Device Ready Code **********
         //This event handler is fired once the AppMobi libraries are ready
         //AppMobi is ready to roll
@@ -83,15 +82,13 @@ Copyright (c) 2011 appMobi
 			//start game time
 			timer = new Timer();
 			timer.AddEventHandler(Update);
-			timer.Start(100);
+			timer.Start(10);
 
 			// define user ball
-			userBall = function() {
-			}
-			var wrapper = document.getElementsByTagName("body")[0];
-			var html = '<img id="userBall" src="images/orange.png" style="position:absolute; top:' + 50 + 'px; left:' + 100 + 'px;"/>';
-			wrapper.innerHTML += html;
-			userBall.dom = document.getElementById("userBall");
+			userBall = new Ball(100,200,'images/orange.png');
+			userBall.setSpeed(30);
+			userBall.Show();
+			timer.AddEventHandler(function(){userBall.Update.apply(userBall);});
 
 
 			//var ball1 = new Ball(100,100);
@@ -105,87 +102,37 @@ Copyright (c) 2011 appMobi
 
 		function Update(timer)
 		{
-			x$("#txtInfo").html(timer.ToString());
+			x$("#txtInfo").html(userBall.getSpeed());
 		}
 
 
 //------------------ BEGIN TOUCH INTERACTION CODE -----------------
-		var isMoving = false;
 		var imgOffset = 0;
 
+		// We set the target of userBall to the touch place
 		function touchStart(e){
 			e.preventDefault();
-			if(isMoving == false && e.target.id == "userBall"){
-				isMoving = true;
-				//var orig = e.originalEvent;
-				var orig = e;
-				var x = orig.touches[0].pageX-imgOffset;
-				var y = orig.touches[0].pageY-imgOffset;
-				//Set the item to moving, and update the position and zIndex
-				userBall.dom.style.top = y + "px";
-				userBall.dom.style.left = x + "px";
-				userBall.dom.style.zIndex = 2000;
-			}
+			//var orig = e.originalEvent;
+			var orig = e;
+			var x = orig.touches[0].pageX-imgOffset;
+			var y = orig.touches[0].pageY-imgOffset;
+			//Set the item to moving, and update the position and zIndex
+			userBall.setTarget(x,y);
+			userBall.dom.style.zIndex = 2000;
 		}
 		
 		function touchMove(e){
-			e.preventDefault();
-			//Check that the target element is registered and flagged as moving
-			if(e.target.id == "userBall" && isMoving){
-				//var orig = e.originalEvent;
-				var orig = e;
-				if(orig.touches.length > 1)
-					return;
-				var x = orig.touches[0].pageX-imgOffset;
-				var y = orig.touches[0].pageY-imgOffset;
-				
-				userBall.dom.style.top=y+"px";
-				userBall.dom.style.left=x+"px";
-			}
+			touchStart(e);
 		}
 		function touchEnd(e){
-			if(e.target.id == "userBall"){
-				isMoving=false;
-				//Deactivate the current moving object and set the zIndex to 1;
-				userBall.dom.style.zIndex=2;
-			}
+			//Deactivate the current moving object and set the zIndex to 1
+			userBall.dom.style.zIndex=2;
 		}
 		window.document.addEventListener('touchmove', touchMove, false);
 		window.document.addEventListener('touchend', touchEnd, false);
 		window.document.addEventListener('touchstart', touchStart, false);
 
 //-------------------- END TOUCH INTERACTION CODE ------------
-        
-        //animate an element with a specified id attribute [Green]
-        function animateElement(ele,newX,newY)
-        {
-            if (newX>(window.innerWidth-66))
-            {
-                newX = window.innerWidth-66;
-            }   
-            if (newY>(window.innerHeight - 66))
-            {
-               newY = window.innerHeight - 66;                  
-            }
-            
-            
-            var objTweenObject = new Object();
-        
-            objTweenObject.left = newX + "px";
-            objTweenObject.top = newY + "px";
-        
-            objTweenObject.duration = '1.5';
-            objTweenObject.easing='ease-in-out';
-        
-            chaseX=newX;
-            chaseY=newY;
-        
-            clearTimeout(messageTimeout);
-			x$('#txtProcessing').html("<b>Moving to</b> X:" + newX + " Y:" + newY);
-            messageTimeout=setTimeout("x$('#txtProcessing').html(' ');",2000);
-        
-            x$(ele).tween(objTweenObject);  
-        }
         
         //random number generator
         function rnd(i)
