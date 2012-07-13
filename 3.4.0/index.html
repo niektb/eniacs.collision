@@ -52,18 +52,13 @@ Copyright (c) 2011 appMobi
         
         var iPortraitWidth=768;
         var iLandscapeWidth=1024;
+
+		var balls = {};
+		var userBall;
           
         //this function runs once the page is loaded
         function init()
         {
-            //set events
-            x$("#animateItem2").on("touchstart",function(e){ animateRandomly("#animateItem2"); });
-            x$("#animateItem3").on("touchstart",function(e){ animateChase("#animateItem3");  });
-            
-            x$("#txtInfo").on("touchstart",function(e){ stageTouched(e); });
-            x$("#txtProcessing").on("touchstart",function(e){ stageTouched(e); });
-            
-            x$("#stage").on("touchstart",function(e){ stageTouched(e); });
         }
         
         
@@ -88,13 +83,22 @@ Copyright (c) 2011 appMobi
 			//start game time
 			timer = new Timer();
 			timer.AddEventHandler(Update);
-			timer.Start(50);
+			timer.Start(100);
 
-			var ball1 = new Ball(100,100);
-			ball1.setSpeed(1,2);
-			ball1.Show();
-			timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
-		//	ball1.Hide();
+			// define user ball
+			userBall = function() {
+			}
+			var wrapper = document.getElementsByTagName("body")[0];
+			var html = '<img id="userBall" src="images/orange.png" style="position:absolute; top:' + 50 + 'px; left:' + 100 + 'px;"/>';
+			wrapper.innerHTML += html;
+			userBall.dom = document.getElementById("userBall");
+
+
+			//var ball1 = new Ball(100,100);
+			//ball1.setSpeed(1,2);
+			//ball1.Show();
+			//timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
+			//ball1.Hide();
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
@@ -103,6 +107,54 @@ Copyright (c) 2011 appMobi
 		{
 			x$("#txtInfo").html(timer.ToString());
 		}
+
+
+//------------------ BEGIN TOUCH INTERACTION CODE -----------------
+		var isMoving = false;
+		var imgOffset = 0;
+
+		function touchStart(e){
+			e.preventDefault();
+			if(isMoving == false && e.target.id == "userBall"){
+				isMoving = true;
+				//var orig = e.originalEvent;
+				var orig = e;
+				var x = orig.touches[0].pageX-imgOffset;
+				var y = orig.touches[0].pageY-imgOffset;
+				//Set the item to moving, and update the position and zIndex
+				userBall.dom.style.top = y + "px";
+				userBall.dom.style.left = x + "px";
+				userBall.dom.style.zIndex = 2000;
+			}
+		}
+		
+		function touchMove(e){
+			e.preventDefault();
+			//Check that the target element is registered and flagged as moving
+			if(e.target.id == "userBall" && isMoving){
+				//var orig = e.originalEvent;
+				var orig = e;
+				if(orig.touches.length > 1)
+					return;
+				var x = orig.touches[0].pageX-imgOffset;
+				var y = orig.touches[0].pageY-imgOffset;
+				
+				userBall.dom.style.top=y+"px";
+				userBall.dom.style.left=x+"px";
+			}
+		}
+		function touchEnd(e){
+			if(e.target.id == "userBall"){
+				isMoving=false;
+				//Deactivate the current moving object and set the zIndex to 1;
+				userBall.dom.style.zIndex=2;
+			}
+		}
+		window.document.addEventListener('touchmove', touchMove, false);
+		window.document.addEventListener('touchend', touchEnd, false);
+		window.document.addEventListener('touchstart', touchStart, false);
+
+//-------------------- END TOUCH INTERACTION CODE ------------
         
         //animate an element with a specified id attribute [Green]
         function animateElement(ele,newX,newY)
@@ -134,28 +186,6 @@ Copyright (c) 2011 appMobi
         
             x$(ele).tween(objTweenObject);  
         }
-        
-        //animate the specified element randomly [Orange]
-        function animateRandomly(ele)
-        {
-            animateElement(ele,rnd(iPortraitWidth),rnd(iLandscapeWidth));
-        }
-        
-        //have this element chase the last element animated [Blue]
-        function animateChase(ele)
-        {
-            animateElement(ele,chaseX-20,chaseY-20);       
-        }
-        
-        //this event handler captures touches on the background image
-        function stageTouched(e)
-        {
-            if (e.touches.length == 1)
-            {
-                 animateElement("#animateItem1",e.touches[0].pageX,e.touches[0].pageY);  
-            }
-            e.preventDefault();
-        }        
         
         //random number generator
         function rnd(i)
