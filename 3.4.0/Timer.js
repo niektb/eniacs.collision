@@ -2,51 +2,58 @@
  * It fires an event each specified time interval, 
  * and calls all event handlers.
  * */
-function Timer() {
-	this.TimeOffset = 0; // ms since 1970
-	this.PreviousFrameTime = 0; // ms from start till previous frame
-	this.CurrentFrameTime = 0; // ms from start till current frame
-	this.Interval = 0; // Time between two frames
-	this.TimeEventId; 
-	this.EventHandlerList = new Array();
-
-	Timer.prototype.AddEventHandler = function(EventHandler) {
-		this.EventHandlerList.push(EventHandler);
-	}
-
-	Timer.prototype.Start = function(interval) {
-		this.Interval = interval;
-		this.TimeOffset = (new Date()).getTime();
-		this.PreviousFrameTime = 0;
-		this.CurrentFrameTime = 0;
-		var self = this;
-		var func = function(){ self.Update.apply(self); };
-		this.TimeEventId = setInterval(func ,this.Interval);
-	}
-
-	Timer.prototype.Stop = function() {
-		clearTimeout(this.TimeEventId);
-	}
+function Time() {
+	this.offset = (new Date()).getTime(); // ms since 1970
+	this.previousFrameTime = 0; // ms from start till previous frame
+	this.currentFrameTime = 0; // ms from start till current frame
 
 	// time between current frame and previous frame
-	Timer.prototype.getElapsedTime = function() {
-		return this.CurrentFrameTime - this.PreviousFrameTime;
+	Time.prototype.getElapsedTime = function() {
+		return this.currentFrameTime - this.previousFrameTime;
+	}
+
+	Time.prototype.toString = function() {
+		return "Offset: " + this.offset
+			+ "<br>Current frame time: " + this.currentFrameTime
+			+ "<br>Elapsed time: " + this.getElapsedTime();
+	}
+}
+
+function Timer() {
+	this.time;
+	this.interval = 0; // Time between two frames
+	var timeEventId; 
+	var eventHandlerList = new Array();
+
+	Timer.prototype.getEventHandlerList = function() {
+		return eventHandlerList;
+	}
+
+	Timer.prototype.addEventHandler = function(func, self) {
+		eventHandlerList.push(function(time){ func.call(self,time); });
+		//eventHandlerList.push(func);
+	}
+
+	Timer.prototype.start = function(interval) {
+		this.interval = interval;
+		this.time = new Time();
+		var self = this;
+		var func = function(){ self.update.apply(self); };
+		timeEventId = setInterval(func, this.interval);
+	}
+
+	Timer.prototype.stop = function() {
+		clearTimeout(timeEventId);
 	}
 
 	// Called every event, calls all eventhandlers
-	Timer.prototype.Update = function() {
-		this.PreviousFrameTime = this.CurrentFrameTime;
-		this.CurrentFrameTime = (new Date()).getTime() - this.TimeOffset;
+	Timer.prototype.update = function() {
+		this.time.previousFrameTime = this.time.currentFrameTime;
+		this.time.currentFrameTime = (new Date()).getTime() - this.time.offset;
 
-		for(EventHandlerName in this.EventHandlerList) {
-			this.EventHandlerList[EventHandlerName](this);
+		for(eventHandlerName in eventHandlerList) {
+			eventHandlerList[eventHandlerName](this.time);
 		}
-	}
-
-	Timer.prototype.ToString = function() {
-		return "Offset: " + this.TimeOffset
-			+ "<br>Current frame time: " + this.CurrentFrameTime
-			+ "<br>Elapsed time: " + this.getElapsedTime();
 	}
 }
 

@@ -52,20 +52,14 @@ Copyright (c) 2011 appMobi
         
         var iPortraitWidth=768;
         var iLandscapeWidth=1024;
+
+		var balls = {};
+		var userBall;
           
         //this function runs once the page is loaded
         function init()
         {
-            //set events
-            x$("#animateItem2").on("touchstart",function(e){ animateRandomly("#animateItem2"); });
-            x$("#animateItem3").on("touchstart",function(e){ animateChase("#animateItem3");  });
-            
-            x$("#txtInfo").on("touchstart",function(e){ stageTouched(e); });
-            x$("#txtProcessing").on("touchstart",function(e){ stageTouched(e); });
-            
-            x$("#stage").on("touchstart",function(e){ stageTouched(e); });
         }
-        
         
         //*** Device Ready Code **********
         //This event handler is fired once the AppMobi libraries are ready
@@ -87,75 +81,50 @@ Copyright (c) 2011 appMobi
 
 			//start game time
 			timer = new Timer();
-			timer.AddEventHandler(Update);
-			timer.Start(10);
+			timer.addEventHandler(update, this);
+			timer.start(20);
 
-			var ball1 = new Ball(100,100);
-			ball1.setSpeed(1,2);
-			ball1.Show();
-			timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
-		//	ball1.Hide();
+			// define user ball
+			userBall = new Ball(100,200,'images/orange.png');
+			userBall.setSpeed(2000);
+			userBall.show();
+			timer.addEventHandler(userBall.update, userBall);
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
-
-		function Update(timer)
+		function update(time)
 		{
-			x$("#txtInfo").html(timer.ToString());
+			//x$("#txtInfo").html(String(timer.getEventHandlerList()));
+			x$("#txtInfo").html(time.toString());
 		}
-        
-        //animate an element with a specified id attribute [Green]
-        function animateElement(ele,newX,newY)
-        {
-            if (newX>(window.innerWidth-66))
-            {
-                newX = window.innerWidth-66;
-            }   
-            if (newY>(window.innerHeight - 66))
-            {
-               newY = window.innerHeight - 66;                  
-            }
-            
-            
-            var objTweenObject = new Object();
-        
-            objTweenObject.left = newX + "px";
-            objTweenObject.top = newY + "px";
-        
-            objTweenObject.duration = '1.5';
-            objTweenObject.easing='ease-in-out';
-        
-            chaseX=newX;
-            chaseY=newY;
-        
-            clearTimeout(messageTimeout);
-			x$('#txtProcessing').html("<b>Moving to</b> X:" + newX + " Y:" + newY);
-            messageTimeout=setTimeout("x$('#txtProcessing').html(' ');",2000);
-        
-            x$(ele).tween(objTweenObject);  
-        }
-        
-        //animate the specified element randomly [Orange]
-        function animateRandomly(ele)
-        {
-            animateElement(ele,rnd(iPortraitWidth),rnd(iLandscapeWidth));
-        }
-        
-        //have this element chase the last element animated [Blue]
-        function animateChase(ele)
-        {
-            animateElement(ele,chaseX-20,chaseY-20);       
-        }
-        
-        //this event handler captures touches on the background image
-        function stageTouched(e)
-        {
-            if (e.touches.length == 1)
-            {
-                 animateElement("#animateItem1",e.touches[0].pageX,e.touches[0].pageY);  
-            }
-            e.preventDefault();
-        }        
+
+//------------------ BEGIN TOUCH INTERACTION CODE -----------------
+		var imgOffset = 0;
+
+		// We set the target of userBall to the touch place
+		function touchStart(e){
+			e.preventDefault();
+			//var orig = e.originalEvent;
+			var orig = e;
+			var x = orig.touches[0].pageX-imgOffset;
+			var y = orig.touches[0].pageY-imgOffset;
+			//Set the item to moving, and update the position and zIndex
+			userBall.setTarget(x,y);
+			userBall.dom.style.zIndex = 2000;
+		}
+		
+		function touchMove(e){
+			touchStart(e);
+		}
+		function touchEnd(e){
+			//Deactivate the current moving object and set the zIndex to 1
+			userBall.dom.style.zIndex=2;
+		}
+		window.document.addEventListener('touchmove', touchMove, false);
+		window.document.addEventListener('touchend', touchEnd, false);
+		window.document.addEventListener('touchstart', touchStart, false);
+
+//-------------------- END TOUCH INTERACTION CODE ------------
         
         //random number generator
         function rnd(i)
