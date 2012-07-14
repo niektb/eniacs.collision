@@ -11,8 +11,6 @@ function Ball(x,y,imgSrc) {
 	this.id;
 	this.dom;
 	this.imgSrc = imgSrc;
-	this.imageWidth = 33;
-	this.imageHeight = 33;
 
 	Ball.prototype.getTarget = function() {
 		return "(" + targetX + "," + targetY + ")";
@@ -54,17 +52,21 @@ function Ball(x,y,imgSrc) {
 			}
 		}
 
-		if ((X + this.imageWidth) >= iPortraitWidth || (X - this.imageWidth) <= 0)
-			dX = -dX;
-		if ((Y + this.imageHeight) >= iLandscapeWidth || (Y - this.imageHeight) <= 0)
-			dY = -dY;
+		if (!hasTarget) {
+			if ((X + this.imageWidth) >= iPortraitWidth 
+					|| (X - this.imageWidth) <= 0)
+				dX = -dX;
+			if ((Y + this.imageHeight) >= iLandscapeWidth 
+					|| (Y - this.imageHeight) <= 0)
+				dY = -dY;
+		}
 
 		X += dX;
 		Y += dY;
 
 		// Update the actual dom properties
-		this.dom.style.top = (Math.round(Y) + this.imageHeight/2) + 'px';
-		this.dom.style.left = (Math.round(X) + this.imageWidth/2) + 'px';
+		this.dom.style.top = (Math.round(Y) - this.dom.clientHeight/2) + 'px';
+		this.dom.style.left = (Math.round(X) - this.dom.clientWidth/2) + 'px';
 	}
 
 	// Add this ball to DOM
