@@ -35,7 +35,7 @@ function Ball(x,y,imgSrc) {
 		targetY = y;
 	}
 
-	Ball.prototype.Update = function() {
+	Ball.prototype.update = function(time) {
 		if (hasTarget) {
 			dX = targetX - X;
 			dY = targetY - Y;
@@ -43,7 +43,9 @@ function Ball(x,y,imgSrc) {
 
 		// Scale (dX,dY) to have the right speed
 		if (!(dX == 0 && dY == 0)) {
-			var scalar = speed / Math.sqrt(dX*dX + dY*dY);
+			// make the movements independent of the framerate
+			var elapsed = time.getElapsedTime() / 1000; // elapsed time in seconds
+			var scalar = (speed * elapsed) / Math.sqrt(dX*dX + dY*dY);
 			if (hasTarget && scalar < 1) {
 				dX *= scalar;
 				dY *= scalar;
@@ -59,7 +61,7 @@ function Ball(x,y,imgSrc) {
 	}
 
 	// Add this ball to DOM
-	Ball.prototype.Show = function() {
+	Ball.prototype.show = function() {
 		var wrapper = document.getElementById("balls");
 		var balls = wrapper.getElementsByTagName("img");
 
@@ -76,7 +78,7 @@ function Ball(x,y,imgSrc) {
 	}
 	
 	// Rmove ball from DOM
-	Ball.prototype.Hide = function() {
+	Ball.prototype.hide = function() {
 		var wrapper = document.getElementById("balls");
 		var dom = wrapper.childNodes[this.id];
 		wrapper.removeChild(dom);

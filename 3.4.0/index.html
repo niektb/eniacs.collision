@@ -81,30 +81,23 @@ Copyright (c) 2011 appMobi
 
 			//start game time
 			timer = new Timer();
-			timer.AddEventHandler(Update);
-			timer.Start(10);
+			timer.addEventHandler(update, this);
+			//timer.addEventHandler(function(time) { update.call(this,time); }, this);
+			timer.start(20);
 
 			// define user ball
 			userBall = new Ball(100,200,'images/orange.png');
-			userBall.setSpeed(30);
-			userBall.Show();
-			timer.AddEventHandler(function(){userBall.Update.apply(userBall);});
-
-
-			//var ball1 = new Ball(100,100);
-			//ball1.setSpeed(1,2);
-			//ball1.Show();
-			//timer.AddEventHandler(function(){ball1.Update.apply(ball1);});
-			//ball1.Hide();
+			userBall.setSpeed(2000);
+			userBall.show();
+			timer.addEventHandler(userBall.update, userBall);
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
-
-		function Update(timer)
+		function update(time)
 		{
-			x$("#txtInfo").html(userBall.getSpeed());
+			//x$("#txtInfo").html(String(timer.getEventHandlerList()));
+			x$("#txtInfo").html(time.toString());
 		}
-
 
 //------------------ BEGIN TOUCH INTERACTION CODE -----------------
 		var imgOffset = 0;
