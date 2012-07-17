@@ -54,7 +54,9 @@ Copyright (c) 2011 appMobi
         var iLandscapeWidth=1024;
 
 		var userBall;
-          
+        var collision = false;  
+		var ballArray = new Array();
+		
         //this function runs once the page is loaded
         function init()
         {
@@ -99,6 +101,7 @@ Copyright (c) 2011 appMobi
 				b.setDirection(Math.random(),Math.random());
 				b.show();
 				timer.addEventHandler(b.update, b);
+				ballArray[i]= b;
 			}
 
 			timer.start(40);
@@ -112,13 +115,31 @@ Copyright (c) 2011 appMobi
 			//var y = userBall.dom.style.top;
 			var a = document.getElementById(userBall.id).style.left;
 			var b = document.getElementById(userBall.id).style.top;
-			a = window.innerHeight;
-			b = window.innerWidth;
-			a = iPortraitWidth;
-			b = iLandscapeWidth;
-			var output = '(' + a + ',' + b + ')';
+			//a = window.innerHeight;
+			//b = window.innerWidth;
+			//a = iPortraitWidth;
+			//b = iLandscapeWidth;
+			//var output = '(' + a + ',' + b + ')';
+			var wrapper = document.getElementById("balls");
+			var balls = wrapper.getElementsByTagName("img");
+			var output = '';
+			
+			for(var i = 0; i < ballArray.length; i++) {
+				var ballX = ballArray[i].getX();
+				var ballY = ballArray[i].getY();
+				var userBallX = userBall.getX();
+				var userBallY = userBall.getY();
+				var dom = document.getElementById(ballArray[i].id);
+				if (Math.sqrt(Math.pow(ballX-userBallX,2) + Math.pow(ballY-userBallY,2)) <= dom.clientHeight){
+					collision = true;
+					output = 'Collision';
+					break;
+				}else{
+					collision = false;
+					output = String(ballArray);
+				}
+			}
 			x$("#txtInfo").html(output);
-			//x$("#txtInfo").html(time.toString());
 		}
 
 //------------------ BEGIN TOUCH INTERACTION CODE -----------------

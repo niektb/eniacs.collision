@@ -11,8 +11,15 @@ function Ball(X,Y,imgSrc) {
 	this.imgSrc = imgSrc;
 
 	this.getPosition = function() {
-		//return hasTarget;
 		return "(" + X + "," + Y + ")";
+	}
+	
+	this.getX = function() {
+		return X;
+	}
+	
+	this.getY = function() {
+		return Y;
 	}
 
 	this.setDirection = function(dx,dy) {
