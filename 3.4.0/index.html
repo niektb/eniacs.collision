@@ -88,13 +88,13 @@ Copyright (c) 2011 appMobi
 			timer.addEventHandler(update, this);
 
 			// define user ball
-			userBall = new Ball(100,200,'images/orange.png',true);
+			userBall = new Ball(100,200,'images/blueball.png',true);
 			userBall.setSpeed(500);
 			userBall.show();
 			timer.addEventHandler(userBall.update, userBall);
 
 			for(var i = 0; i < 10; i++) {
-				var b = new Ball(rnd(iPortraitWidth),rnd(iLandscapeWidth),'images/green.png');
+				var b = new Ball(rnd(iPortraitWidth),rnd(iLandscapeWidth),'images/redball.png');
 				b.setSpeed(200);
 				b.setDirection(Math.random(),Math.random());
 				b.show();
@@ -170,15 +170,12 @@ Copyright (c) 2011 appMobi
         </script>
 
     </head>
-    <body onload="init();" style="background-image:url('images/app_bg.jpg');background-repeat:no-repeat;">
+    <body onload="init();" style="background-image:url('images/Collision1.jpg');background-repeat:no-repeat;">
     <center><img id="stage" src="images/0.gif" ontouchmove="preventDefaultScroll(event); return false;" style="width:95%;height:95%;"/></center>
     
-    <span id="txtInfo" style="position:absolute; top:130px; left:10px; width:748px;  text-align:center;">
+    <span id="txtInfo" style="position:absolute; top:130px; left:10px; width:748px; color:#000;  text-align:center;">
 		This is a message box.
     </span> 
-    
-    <span id="txtProcessing" style="position:absolute; top:100px; left:10px; width:748px; text-align:center;"></span>
-
 	<div id="balls">
 	</div>
     </body>
