@@ -53,7 +53,6 @@ Copyright (c) 2011 appMobi
         var iPortraitWidth=768;
         var iLandscapeWidth=1024;
 
-		var balls = {};
 		var userBall;
           
         //this function runs once the page is loaded
@@ -66,6 +65,11 @@ Copyright (c) 2011 appMobi
         //AppMobi is ready to roll
         function onDeviceReady()
         {
+        	//iPortraitWidth = window.outerWidth;
+        	//iLandscapeWidth = window.outerHeight;
+        	//iPortraitWidth = window.outerHeight;
+        	//iLandscapeWidth = window.outerWidth;
+
             //use AppMobi viewport
             AppMobi.display.useViewport(iPortraitWidth,iLandscapeWidth);
         
@@ -82,20 +86,39 @@ Copyright (c) 2011 appMobi
 			//start game time
 			timer = new Timer();
 			timer.addEventHandler(update, this);
-			timer.start(20);
 
 			// define user ball
-			userBall = new Ball(100,200,'images/orange.png');
-			userBall.setSpeed(2000);
+			userBall = new Ball(100,200,'images/orange.png',true);
+			userBall.setSpeed(500);
 			userBall.show();
 			timer.addEventHandler(userBall.update, userBall);
+
+			for(var i = 0; i < 10; i++) {
+				var b = new Ball(rnd(iPortraitWidth),rnd(iLandscapeWidth),'images/green.png');
+				b.setSpeed(200);
+				b.setDirection(Math.random(),Math.random());
+				b.show();
+				timer.addEventHandler(b.update, b);
+			}
+
+			timer.start(40);
         }
         //initial event handler to detect when appMobi is ready to roll
 		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
 		function update(time)
 		{
-			//x$("#txtInfo").html(String(userBall.dom.clientWidth));
-			x$("#txtInfo").html(time.toString());
+			// a is defined while b is not!!!
+			//var x = userBall.dom.style.left;
+			//var y = userBall.dom.style.top;
+			var a = document.getElementById(userBall.id).style.left;
+			var b = document.getElementById(userBall.id).style.top;
+			a = window.innerHeight;
+			b = window.innerWidth;
+			a = iPortraitWidth;
+			b = iLandscapeWidth;
+			var output = '(' + a + ',' + b + ')';
+			x$("#txtInfo").html(output);
+			//x$("#txtInfo").html(time.toString());
 		}
 
 //------------------ BEGIN TOUCH INTERACTION CODE -----------------
@@ -110,7 +133,7 @@ Copyright (c) 2011 appMobi
 			var y = orig.touches[0].pageY-imgOffset;
 			//Set the item to moving, and update the position and zIndex
 			userBall.setTarget(x,y);
-			userBall.dom.style.zIndex = 2000;
+			document.getElementById(userBall.id).style.zIndex = 2000;
 		}
 		
 		function touchMove(e){
@@ -118,7 +141,7 @@ Copyright (c) 2011 appMobi
 		}
 		function touchEnd(e){
 			//Deactivate the current moving object and set the zIndex to 1
-			userBall.dom.style.zIndex=2;
+			document.getElementById(userBall.id).style.zIndex=2;
 		}
 		window.document.addEventListener('touchmove', touchMove, false);
 		window.document.addEventListener('touchend', touchEnd, false);

@@ -25,16 +25,16 @@ function Timer() {
 	var timeEventId; 
 	var eventHandlerList = new Array();
 
-	Timer.prototype.getEventHandlerList = function() {
+	this.getEventHandlerList = function() {
 		return eventHandlerList;
 	}
 
-	Timer.prototype.addEventHandler = function(func, self) {
+	this.addEventHandler = function(func, self) {
 		eventHandlerList.push(function(time){ func.call(self,time); });
 		//eventHandlerList.push(func);
 	}
 
-	Timer.prototype.start = function(interval) {
+	this.start = function(interval) {
 		this.interval = interval;
 		this.time = new Time();
 		var self = this;
@@ -42,12 +42,12 @@ function Timer() {
 		timeEventId = setInterval(func, this.interval);
 	}
 
-	Timer.prototype.stop = function() {
+	this.stop = function() {
 		clearTimeout(timeEventId);
 	}
 
 	// Called every event, calls all eventhandlers
-	Timer.prototype.update = function() {
+	this.update = function() {
 		this.time.previousFrameTime = this.time.currentFrameTime;
 		this.time.currentFrameTime = (new Date()).getTime() - this.time.offset;
 

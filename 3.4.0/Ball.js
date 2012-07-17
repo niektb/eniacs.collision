@@ -1,76 +1,82 @@
-function Ball(x,y,imgSrc) {
-	var X = x; // Current x and y coords
-	var Y = y; 
-	var dX = 0; // Movement per frame in x or y direction
+function Ball(X,Y,imgSrc) {
+	var dX = 0; // Movement in x or y direction
 	var dY = 0;
-	var targetX = 0; // Coords of target
-	var targetY = 0;
-	var speed = 0; // Speed for moving towards a target
+	var speed = 0; // Speed for moving towards a target in pixels / sec
+
+	var targetX = X; // Coords of target
+	var targetY = Y;
 	var hasTarget = false;
 
 	this.id;
-	this.dom;
 	this.imgSrc = imgSrc;
 
-	Ball.prototype.getTarget = function() {
-		return "(" + targetX + "," + targetY + ")";
-	}
-
-	Ball.prototype.getPos = function() {
+	this.getPosition = function() {
+		//return hasTarget;
 		return "(" + X + "," + Y + ")";
 	}
 
-	Ball.prototype.setDirection = function(dx,dy) {
-		dX = dx;
-		dY = dy;
+	this.setDirection = function(dx,dy) {
+		// Normalize direction vector
+		var length = Math.sqrt(dx*dx + dy*dy);
+		dX = dx / length;
+		dY = dy / length;
+		hasTarget = false;
 	}
 
-	Ball.prototype.setSpeed = function(s) {
+	this.setSpeed = function(s) {
 		speed = s;
 	}
 
-	Ball.prototype.setTarget = function(x,y) {
-		hasTarget = true;
-		targetX = x;
-		targetY = y;
+	this.getTarget = function() {
+		return "(" + targetX + "," + targetY + ")";
 	}
 
-	Ball.prototype.update = function(time) {
-		if (hasTarget) {
-			dX = targetX - X;
-			dY = targetY - Y;
-		}
+	this.setTarget = function(x,y) {
+		targetX = x;
+		targetY = y;
+		hasTarget = true;
+	}
 
-		// Scale (dX,dY) to have the right speed
-		if (!(dX == 0 && dY == 0)) {
-			// make the movements independent of the framerate
-			var elapsed = time.getElapsedTime() / 1000; // elapsed time in seconds
-			var scalar = (speed * elapsed) / Math.sqrt(dX*dX + dY*dY);
-			if (hasTarget && scalar < 1) {
-				dX *= scalar;
-				dY *= scalar;
+	this.update = function(time) {
+		var dom = document.getElementById(this.id);
+		var elapsedTime = time.getElapsedTime() / 1000; // elapsed time in seconds
+		var distance = speed * elapsedTime;
+		var dx = 0,dy = 0;
+
+		if (hasTarget) {
+			dx = targetX - X;
+			dy = targetY - Y;
+			var length = Math.sqrt(dx*dx + dy*dy);
+			// Normalize direction vector
+			if (length > distance) {
+				// adept movements to have the right speed
+				dx *= distance / length;
+				dy *= distance / length;
 			}
 		}
-
-		if (!hasTarget) {
-			if ((X + this.imageWidth) >= iPortraitWidth 
-					|| (X - this.imageWidth) <= 0)
-				dX = -dX;
-			if ((Y + this.imageHeight) >= iLandscapeWidth 
-					|| (Y - this.imageHeight) <= 0)
-				dY = -dY;
+		else {
+			if ((X + dom.clientWidth/2) >= iPortraitWidth)
+				dX = -Math.abs(dX);
+			if ((X - dom.clientWidth/2) <= 0)
+				dX = Math.abs(dX);
+			if ((Y + dom.clientHeight/2) >= iLandscapeWidth) 
+				dY = -Math.abs(dY);
+			if ((Y - dom.clientHeight/2) <= 0)
+				dY = Math.abs(dY);
+			dx = dX * distance;
+			dy = dY * distance;
 		}
 
-		X += dX;
-		Y += dY;
+		X += dx;
+		Y += dy;
 
 		// Update the actual dom properties
-		this.dom.style.top = (Math.round(Y) - this.dom.clientHeight/2) + 'px';
-		this.dom.style.left = (Math.round(X) - this.dom.clientWidth/2) + 'px';
+		dom.style.top = (Math.round(Y) - dom.clientHeight/2) + 'px';
+		dom.style.left = (Math.round(X) - dom.clientWidth/2) + 'px';
 	}
 
 	// Add this ball to DOM
-	Ball.prototype.show = function() {
+	this.show = function() {
 		var wrapper = document.getElementById("balls");
 		var balls = wrapper.getElementsByTagName("img");
 
@@ -81,16 +87,14 @@ function Ball(x,y,imgSrc) {
 			var ballNr = parseInt(balls[balls.length-1].id.substr(4)) + 1;
 		this.id = "ball" + ballNr;
 
-		var html = '<img id="' + this.id + '" src="' + this.imgSrc + '" style="position:absolute; top:' + Y + 'px; left:' + X + 'px;"/>';
+		var html = '<img id="' + this.id + '" src="' + this.imgSrc + '" style="position:absolute;" />';
 		wrapper.innerHTML += html;
-		this.dom = wrapper.childNodes[this.id];
 	}
 	
-	// Rmove ball from DOM
-	Ball.prototype.hide = function() {
+	// Remove ball from DOM
+	this.hide = function() {
 		var wrapper = document.getElementById("balls");
-		var dom = wrapper.childNodes[this.id];
+		var dom = document.getElementById(this.id);
 		wrapper.removeChild(dom);
 	}
 }
-
