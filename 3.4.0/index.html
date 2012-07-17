@@ -54,8 +54,9 @@ Copyright (c) 2011 appMobi
         var iLandscapeWidth=1024;
 
 		var userBall;
-        var collision = false;  
 		var ballArray = new Array();
+        var collision = false;  
+		var gameRunning = false;
 		
         //this function runs once the page is loaded
         function init()
@@ -88,14 +89,22 @@ Copyright (c) 2011 appMobi
 			//start game time
 			timer = new Timer();
 			timer.addEventHandler(update, this);
+        }
+        //initial event handler to detect when appMobi is ready to roll
+		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
+		function startGame() {
+			document.getElementsByTagName("body")[0].style.backgroundImage = "url('images/Collision1.jpg')";
+			// Empty the balls div
+			document.getElementById("balls").innerHTML = "";
 
 			// define user ball
 			userBall = new Ball(100,200,'images/blueball.png',true);
-			userBall.setSpeed(500);
+			userBall.setSpeed(400);
 			userBall.show();
 			timer.addEventHandler(userBall.update, userBall);
 
-			for(var i = 0; i < 10; i++) {
+			// Add other balls to the game
+			for(var i = 0; i < 5; i++) {
 				var b = new Ball(rnd(iPortraitWidth),rnd(iLandscapeWidth),'images/redball.png');
 				b.setSpeed(200);
 				b.setDirection(Math.random(),Math.random());
@@ -104,10 +113,10 @@ Copyright (c) 2011 appMobi
 				ballArray[i]= b;
 			}
 
-			timer.start(40);
-        }
-        //initial event handler to detect when appMobi is ready to roll
-		document.addEventListener("appMobi.device.ready",onDeviceReady,false); 
+			timer.start(50);
+			gameRunning = true;
+		}
+
 		function update(time)
 		{
 			// a is defined while b is not!!!
@@ -136,10 +145,18 @@ Copyright (c) 2011 appMobi
 					break;
 				}else{
 					collision = false;
-					output = String(ballArray);
 				}
 			}
 			x$("#txtInfo").html(output);
+
+			if (collision)
+				gameOver();
+		}
+		
+		function gameOver() {
+			timer.stop();
+			document.getElementsByTagName("body")[0].style.backgroundImage = "url('images/GameOver.png')";
+			gameRunning = false;
 		}
 
 //------------------ BEGIN TOUCH INTERACTION CODE -----------------
@@ -147,6 +164,13 @@ Copyright (c) 2011 appMobi
 
 		// We set the target of userBall to the touch place
 		function touchStart(e){
+			if (!gameRunning)
+				startGame();
+			else
+				touchMove(e);
+		}
+		
+		function touchMove(e){
 			e.preventDefault();
 			//var orig = e.originalEvent;
 			var orig = e;
@@ -156,10 +180,7 @@ Copyright (c) 2011 appMobi
 			userBall.setTarget(x,y);
 			document.getElementById(userBall.id).style.zIndex = 2000;
 		}
-		
-		function touchMove(e){
-			touchStart(e);
-		}
+
 		function touchEnd(e){
 			//Deactivate the current moving object and set the zIndex to 1
 			document.getElementById(userBall.id).style.zIndex=2;

@@ -62,13 +62,13 @@ function Ball(X,Y,imgSrc) {
 			}
 		}
 		else {
-			if ((X + dom.clientWidth/2) >= iPortraitWidth)
+			if ((X + dom.width/2) >= width)
 				dX = -Math.abs(dX);
-			if ((X - dom.clientWidth/2) <= 0)
+			if ((X - dom.width/2) <= 0)
 				dX = Math.abs(dX);
-			if ((Y + dom.clientHeight/2) >= iLandscapeWidth) 
+			if ((Y + dom.height/2) >= height) 
 				dY = -Math.abs(dY);
-			if ((Y - dom.clientHeight/2) <= 0)
+			if ((Y - dom.height/2) <= 0)
 				dY = Math.abs(dY);
 			dx = dX * distance;
 			dy = dY * distance;
@@ -78,8 +78,8 @@ function Ball(X,Y,imgSrc) {
 		Y += dy;
 
 		// Update the actual dom properties
-		dom.style.top = (Math.round(Y) - dom.clientHeight/2) + 'px';
-		dom.style.left = (Math.round(X) - dom.clientWidth/2) + 'px';
+		dom.style.top = Math.round(Y - dom.height/2) + 'px';
+		dom.style.left = Math.round(X - dom.width/2) + 'px';
 	}
 
 	// Add this ball to DOM

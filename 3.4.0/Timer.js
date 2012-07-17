@@ -42,6 +42,11 @@ function Timer() {
 		timeEventId = setInterval(func, this.interval);
 	}
 
+	this.clear = function() {
+		clearTimeout(timeEventId);
+		eventHandlerList = new Array();
+	}
+
 	this.stop = function() {
 		clearTimeout(timeEventId);
 	}
