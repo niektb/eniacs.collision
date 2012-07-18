@@ -6,6 +6,7 @@ function Time() {
 	this.offset = (new Date()).getTime(); // ms since 1970
 	this.previousFrameTime = 0; // ms from start till previous frame
 	this.currentFrameTime = 0; // ms from start till current frame
+	this.interval = 0; // ms from start till current frame
 
 	// time between current frame and previous frame
 	Time.prototype.getElapsedTime = function() {
@@ -13,9 +14,9 @@ function Time() {
 	}
 
 	Time.prototype.toString = function() {
-		return "Offset: " + this.offset
-			+ "<br>Current frame time: " + this.currentFrameTime
-			+ "<br>Elapsed time: " + this.getElapsedTime();
+		return "<br>Current time: " + Math.round(this.currentFrameTime/1000)
+			+ "<br>Aimed framerate: " + Math.round(1000/this.interval)
+			+ "<br>Actual framerate: " + Math.round(1000/(this.getElapsedTime()));
 	}
 }
 
@@ -55,6 +56,7 @@ function Timer() {
 	this.update = function() {
 		this.time.previousFrameTime = this.time.currentFrameTime;
 		this.time.currentFrameTime = (new Date()).getTime() - this.time.offset;
+		this.time.interval = this.interval;
 
 		for(eventHandlerName in eventHandlerList) {
 			eventHandlerList[eventHandlerName](this.time);
