@@ -1,0 +1,142 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/> 
+    <title>Collision</title>
+        <script type="text/javascript" charset="utf-8" src="Ball.js"></script>
+        <script type="text/javascript" charset="utf-8" src="Timer.js"></script>
+        <style type="text/css">
+            /*** Prevent copy paste for all elements except text fields ****/
+            body { color:White;font-family:Arial;font-size:22pt; }
+        </style>
+
+        <script language="javascript" type="text/javascript">
+      
+        //global variables
+		var timer;
+        var width=800;
+        var height=600;
+
+		var userBall;
+		var ballArray = new Array();
+        var collision = false;  
+		var gameRunning = false;
+		
+        //this function runs once the page is loaded
+        function init()
+        {
+        	width = window.innerWidth;
+        	height = window.innerHeight;
+			var dom = document.getElementById("gameOver");
+			dom.style.left = Math.round(width/2 - dom.width/2) + 'px';
+			dom.style.top = Math.round(height/2 - dom.height/2) + 'px';
+			dom.style.zIndex = 10;
+			var dom = document.getElementById("txtInfo");
+			dom.style.left = Math.round(width/2 - dom.clientWidth/2) + 'px';
+			dom.style.top = Math.round(height/2 - dom.clientHeight/2) + 'px';
+			dom.style.zIndex = 0;
+        
+			//start game time
+			timer = new Timer();
+        }
+
+		function startGame() {
+			document.getElementById("gameOver").style.display = "none";
+			// Empty the balls div
+			document.getElementById("balls").innerHTML = "";
+
+			// define user ball
+			userBall = new Ball(100,200,'images/blueball.png',true);
+			userBall.setSpeed(500);
+			userBall.show();
+			timer.addEventHandler(userBall.update, userBall);
+
+			// Add other balls to the game
+			for(var i = 0; i < 10; i++) {
+				var b = new Ball(rnd(width),rnd(height),'images/redball.png');
+				b.setSpeed(300);
+				b.setDirection(Math.random(),Math.random());
+				b.show();
+				timer.addEventHandler(b.update, b);
+				ballArray[i]= b;
+			}
+
+			timer.addEventHandler(update, this);
+			timer.start(30);
+			gameRunning = true;
+		}
+		
+		function gameOver() {
+			timer.clear();
+			document.getElementById("gameOver").style.display = "block";
+			gameRunning = false;
+		}
+
+		function update(time)
+		{
+			var a = document.getElementById(userBall.id).style.left;
+			var b = document.getElementById(userBall.id).style.top;
+			var wrapper = document.getElementById("balls");
+			var balls = wrapper.getElementsByTagName("img");
+			
+			for(var i = 0; i < ballArray.length; i++) {
+				var ballX = ballArray[i].getX();
+				var ballY = ballArray[i].getY();
+				var userBallX = userBall.getX();
+				var userBallY = userBall.getY();
+				var dom = document.getElementById(ballArray[i].id);
+				if (Math.sqrt(Math.pow(ballX-userBallX,2) + Math.pow(ballY-userBallY,2)) <= dom.clientHeight){
+					collision = true;
+					break;
+				}else{
+					collision = false;
+				}
+			}
+
+			document.getElementById("txtInfo").innerHTML = time.toString();
+			if (collision)
+				gameOver();
+		}
+
+//------------------ BEGIN TOUCH INTERACTION CODE -----------------
+		var imgOffset = 0;
+
+		// We set the target of userBall to the touch place
+		function mouseStart(e){
+			// Game is not running and left button pressed
+			if (!gameRunning && e.button == 0) 
+				startGame();
+		}
+		window.document.addEventListener('click', mouseStart, false);
+		
+		function mouseMove(e){
+			e.preventDefault();
+			var x = e.clientX-imgOffset;
+			var y = e.clientY-imgOffset;
+			//Set the item to moving, and update the position and zIndegetElementById
+			userBall.setTarget(x,y);
+			document.getElementById(userBall.id).style.zIndex = 2000;
+		}
+		window.document.addEventListener('mousemove', mouseMove, false);
+
+//-------------------- END TOUCH INTERACTION CODE ------------
+        
+        //random number generator
+        function rnd(i)
+        {
+            return Math.floor(Math.random()*i);
+        }
+        </script>
+
+    </head>
+    <body onload="init();" style="background-color: #000;background:url('images/browser/bg.jpg') no-repeat; background-size:100%; overflow:hidden;">
+    
+	<img id="gameOver" src="images/browser/GameOver.png" style="display:none; position:absolute;">
+
+    <span id="txtInfo" style="width:400px; height:300px; color:#fff; position: absolute; text-align: center">
+		This is a message box.
+    </span> 
+	<div id="balls">
+	</div>
+    </body>
+</html>
